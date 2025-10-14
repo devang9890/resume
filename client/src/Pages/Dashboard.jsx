@@ -3,7 +3,9 @@ import React from 'react'
 const Dashboard = () => {
   return (
     <div>
-      <h1>Dashboard page</h1>
+     <div className='max-w-7xl mx-auto px-4 py-8'>
+      <p>Welcome , Devang Singh</p>
+     </div>
     </div>
   )
 }
