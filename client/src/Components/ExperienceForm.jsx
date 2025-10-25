@@ -30,7 +30,7 @@ const ExperienceForm = ({ data, onChange }) => {
       <div>
         <div>
           <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
-            Professional Summary
+            Professional Experience
           </h3>
           <p className="text-sm text-gray-500">Add your work experience</p>
         </div>
