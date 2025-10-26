@@ -1,0 +1,22 @@
+import express from "express";
+import cors from "cors";
+import "dotenv/config";
+import { connect } from "mongoose";
+import connectDB from "./configs/db.js";
+import userRouter from "./routes/userRoutes.js";
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+//DATABASE CONNECTION 
+await connectDB()
+
+app.use(express.json())
+app.use(cors())
+
+app.get('/' , (req , res)=> res.send("server is live .."))
+app.use('/api/users' , userRouter)
+
+app.listen(PORT , ()=>{
+    console.log(`server is runnning on port $(PORT) `);
+});
