@@ -1,24 +1,39 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
-import { connect } from "mongoose";
 import connectDB from "./configs/db.js";
 import userRouter from "./routes/userRoutes.js";
 import resumeRouter from "./routes/resumeRoutes.js";
+import aiRouter from "./routes/aiRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-//DATABASE CONNECTION 
-await connectDB()
+async function startServer() {
+  try {
+    // ✅ Connect to MongoDB
+    await connectDB();
+    console.log("✅ MongoDB connected successfully");
 
-app.use(express.json())
-app.use(cors())
+    // ✅ Middlewares
+    app.use(express.json());
+    app.use(cors());
 
-app.get('/' , (req , res)=> res.send("server is live .."))
-app.use('/api/users' , userRouter)
-app.use('/api/resumes' , resumeRouter)
+    // ✅ Routes
+    app.get("/", (req, res) => res.send("Server is live 🚀"));
+    app.use("/api/users", userRouter);
+    app.use("/api/resumes", resumeRouter);
+    app.use("/api/ai", aiRouter);
 
-app.listen(PORT , ()=>{
-    console.log(`server is runnning on port $(PORT) `);
-});
+    // ✅ Start Server
+    app.listen(PORT, () => {
+      console.log(`✅ Server is running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("❌ Failed to start server:", err);
+    process.exit(1);
+  }
+}
+
+// ✅ Initialize server
+startServer();
