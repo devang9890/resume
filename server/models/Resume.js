@@ -19,31 +19,31 @@ const ResumeSchema = new mongoose.Schema({
     website: { type: String, default: "" },
   },
   experience: [
-  {
-    company: { type: String },
-    position: { type: String },
-    start_date: { type: String },
-    end_date: { type: String },
-    description: { type: String },
-    is_current: { type: Boolean },
-  }
-],
-project : [
-     {
-    name: { type: String },
-    type: { type: String },
-    description: { type: String },
-  }
-],
- education: [
-  {
-    institution: { type: String },
-    degree: { type: String },
-    field: { type: String },
-    graduation_date: { type: String },
-    gpa: { type: String },
-  }
-],
+    {
+      company: { type: String },
+      position: { type: String },
+      start_date: { type: String },
+      end_date: { type: String },
+      description: { type: String },
+      is_current: { type: Boolean },
+    }
+  ],
+  projects: [
+    {
+      name: { type: String },
+      type: { type: String },
+      description: { type: String },
+    }
+  ],
+  education: [
+    {
+      institution: { type: String },
+      degree: { type: String },
+      field: { type: String },
+      graduation_date: { type: String },
+      gpa: { type: String },
+    }
+  ],
 }, {timestamps: true , minimize: false})
 
 const Resume = mongoose.model('Resume' , ResumeSchema)

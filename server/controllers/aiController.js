@@ -106,7 +106,7 @@ export const uploadResume = async (req, res) => {
           "is_current": false
         }
       ],
-      "project": [
+      "projects": [
         {
           "name": "",
           "type": "",

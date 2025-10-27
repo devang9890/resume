@@ -1,5 +1,5 @@
-import imageKit from "../configs/imageKit";
-import Resume from "../models/Resume";
+import imageKit from "../configs/imageKit.js";
+import Resume from "../models/Resume.js";
 import fs from 'fs'
 
 // controller for creating a new resume
@@ -26,7 +26,7 @@ export const deleteResume = async (req, res) => {
         const userId = req.userId;
         const { resumeId } = req.params;
 
-        await Resume.FindOneAndDelete({ userId, _id: resumeId })
+        await Resume.findOneAndDelete({ userId, _id: resumeId })
         // return success message 
         return res.status(201).json({ message: 'Resume created successfully' })
 
@@ -102,7 +102,7 @@ export const updatedResume = async (req, res) => {
 
         }
 
-        const resume = await Resume.findByIdAndUpdate({ userId, _id: resumeId }, resumeDataCopy, { new: true })
+        const resume = await Resume.findOneAndUpdate({ userId, _id: resumeId }, resumeDataCopy, { new: true })
 
         return res.status(200).json({ message: "Saved Successfully", resume })
     } catch (error) {

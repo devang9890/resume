@@ -41,7 +41,7 @@ export const registerUser = async(req , res ) =>{
         return res.status(201).json({Message: 'User created successfully' , token , user:newUser})
 
     } catch(error){
-        return res.status(400).json({Message: error.Message})
+        return res.status(400).json({Message: error.message})
 
     }
 
@@ -66,12 +66,12 @@ export const loginUser = async(req , res ) =>{
         }
 
         // return success message
-        const token = generateToken(User._id)
+        const token = generateToken(user._id)
         user.password = undefined;
         return res.status(201).json({Message: 'Login successful' , token , user})
 
     } catch(error){
-        return res.status(400).json({Message: error.Message})
+        return res.status(400).json({Message: error.message})
 
     }
 
@@ -95,7 +95,7 @@ export const getUserById = async(req , res ) =>{
         
 
     } catch(error){
-        return res.status(400).json({Message: error.Message})
+        return res.status(400).json({Message: error.message})
 
     }
 
@@ -111,6 +111,6 @@ export const getUserResumes = async(req, res) => {
         const resumes = await Resume.find({userId})
         return res.status(200).json({resumes})
     } catch(error){
-        return res.status(400).json({message : error.message})
+        return res.status(400).json({Message: error.message})
     }
 }
