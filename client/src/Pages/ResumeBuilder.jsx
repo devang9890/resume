@@ -25,9 +25,13 @@ import ExperienceForm from "../Components/ExperienceForm";
 import EducationForm from "../Components/EducationForm";
 import ProjectForm from "../Components/ProjectForm";
 import SkillsForm from "../Components/SkillsForm";
+import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import api from "../api/api"; // ✅ Make sure this file exists (Axios instance or fetch helper)
 
 const ResumeBuilder = () => {
   const { resumeId } = useParams();
+  const { token } = useSelector((state) => state.auth); // ✅ fixed `tokens` → `token`
 
   const [resumeData, setResumeData] = useState({
     _id: "",
@@ -55,31 +59,56 @@ const ResumeBuilder = () => {
     { id: "skills", name: "Skills", icon: Sparkles },
   ];
 
+  const activeSection = sections[activeSectionIndex]; // ✅ moved outside
+
+  // ✅ Fixed function: proper headers and variable names
   const loadExistingResume = async () => {
-    const resume = dummyResumeData.find((resume) => resume._id === resumeId);
-    if (resume) {
-      setResumeData(resume);
-      document.title = resume.title;
+    try {
+      const { data } = await api.get(`/api/resumes/get/${resumeId}`, {
+        headers: { Authorization: token },
+      });
+
+      if (data.resume) {
+        setResumeData(data.resume);
+        document.title = data.resume.title;
+      }
+    } catch (error) {
+      console.error("Error loading resume:", error.message);
     }
   };
 
-  const activeSection = sections[activeSectionIndex];
-
   useEffect(() => {
     loadExistingResume();
-  }, []);
+  }, [resumeId]);
 
+  // ✅ Fixed: correct FormData usage and header spelling
   const changeResumeVisibility = async () => {
-    setResumeData({ ...resumeData, public: !resumeData.public });
+    try {
+      const formData = new FormData();
+      formData.append("resumeId", resumeId);
+      formData.append("data", JSON.stringify({ public: !resumeData.public }));
+
+      const { data } = await api.put("/api/resumes/update", formData, {
+        headers: { Authorization: token },
+      });
+
+      setResumeData((prev) => ({ ...prev, public: !prev.public }));
+      toast.success(data.message || "Visibility updated!");
+    } catch (error) {
+      console.error("Error updating resume:", error);
+      toast.error("Failed to change visibility");
+    }
   };
+
   const handleShare = () => {
     const frontendUrl = window.location.href.split("/app/")[0];
-    const resumeUrl = frontendUrl + "/view/" + resumeId;
+    const resumeUrl = `${frontendUrl}/view/${resumeId}`;
 
     if (navigator.share) {
-      navigator.share({ url: resumeUrl, text: "My Resume" });
+      navigator.share({ url: resumeUrl, text: "Check out my resume!" });
     } else {
-      alert("share not supported on this browser");
+      navigator.clipboard.writeText(resumeUrl);
+      toast.success("Link copied to clipboard!");
     }
   };
 
@@ -109,7 +138,9 @@ const ResumeBuilder = () => {
               <hr
                 className="absolute top-0 left-0 h-1 bg-gradient-to-r from-green-500 to-green-600 border-none transition-all duration-500"
                 style={{
-                  width: `${(activeSectionIndex * 100) / (sections.length - 1)}%`,
+                  width: `${
+                    (activeSectionIndex * 100) / (sections.length - 1)
+                  }%`,
                 }}
               />
 
@@ -234,7 +265,7 @@ const ResumeBuilder = () => {
                 )}
               </div>
 
-              <button className="bg-gradient-to-br from-green-100 to-green-200 ring-green-300 text-green-600 ring hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm">
+              <button className="bg-gradient-to-br from-green-100 to-green-200 ring-green-300 text-green-600 hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm">
                 Save Changes
               </button>
             </div>
@@ -242,7 +273,6 @@ const ResumeBuilder = () => {
 
           {/* Right Panel - Preview */}
           <div className="lg:col-span-7 max-lg:mt-6 relative">
-            {/* Buttons ABOVE the Preview */}
             <div className="flex items-center justify-end gap-3 mb-4">
               {resumeData.public && (
                 <button
@@ -275,7 +305,6 @@ const ResumeBuilder = () => {
               </button>
             </div>
 
-            {/* Resume Preview */}
             <ResumePreview
               data={resumeData}
               template={resumeData.template}
