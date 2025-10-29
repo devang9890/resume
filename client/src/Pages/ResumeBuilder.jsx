@@ -31,7 +31,7 @@ import api from "../configs/api";
 
 const ResumeBuilder = () => {
   const { resumeId } = useParams();
-  const { token } = useSelector((state) => state.auth); // ✅ fixed `tokens` → `token`
+  const { token } = useSelector((state) => state.auth);
 
   const [resumeData, setResumeData] = useState({
     _id: "",
@@ -65,7 +65,7 @@ const ResumeBuilder = () => {
   const loadExistingResume = async () => {
     try {
       const { data } = await api.get(`/api/resumes/get/${resumeId}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: token },
       });
 
       if (data.resume) {
@@ -119,21 +119,32 @@ const ResumeBuilder = () => {
 
   // Save resume data
   const saveResume = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("resumeId", resumeId);
-      formData.append("resumeData", JSON.stringify(resumeData));
+  try {
+    let updatedResumeData = structuredClone(resumeData);
 
-      const { data } = await api.put("/api/resumes/update", formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      toast.success(data.message || "Resume saved successfully!");
-    } catch (error) {
-      console.error("Error saving resume:", error);
-      toast.error("Failed to save resume");
+    // remove image from updatedResumeData
+    if (typeof resumeData.personal_info.image === 'object') {
+      delete updatedResumeData.personal_info.image;
     }
-  };
+
+    const formData = new FormData();
+    formData.append("resumeId", resumeId);
+    formData.append("resumeData", JSON.stringify(updatedResumeData));
+    removeBackground && formData.append("removeBackground", "yes");
+    typeof resumeData.personal_info.image === 'object' && formData.append("image", resumeData.personal_info.image);
+
+    const { data } = await api.put('/api/resumes/update', formData, {
+      headers: {
+        Authorization: token 
+      }
+    });
+
+    setResumeData(data.resume);
+    toast.success(data.message);
+  } catch (error) {
+    console.error("Error saving resume:", error);
+  }
+};
 
   return (
     <div>
@@ -285,7 +296,7 @@ const ResumeBuilder = () => {
               </div>
 
               <button 
-                onClick={saveResume}
+                onClick={() => {toast.promise(saveResume, {loading: 'saving....'})}}
                 className="bg-gradient-to-br from-green-100 to-green-200 ring-green-300 text-green-600 hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm"
               >
                 Save Changes
