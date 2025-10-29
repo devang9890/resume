@@ -12,8 +12,13 @@ export const enhanceProfessionalSummary = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
+    // Check if OpenAI API key is configured
+    if (!process.env.OPENAI_API_KEY && !process.env.OpenAI_API_KEY) {
+      return res.status(500).json({ message: "OpenAI API key not configured" });
+    }
+
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: process.env.OPENAI_MODEL || "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
@@ -30,7 +35,8 @@ export const enhanceProfessionalSummary = async (req, res) => {
     const enhancedContent = response.choices[0].message.content;
     return res.status(200).json({ enhancedContent });
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    console.error("AI Enhancement Error:", error);
+    return res.status(500).json({ message: error.message || "AI service unavailable" });
   }
 };
 
@@ -45,8 +51,13 @@ export const enhanceJobDescription = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
+    // Check if OpenAI API key is configured
+    if (!process.env.OPENAI_API_KEY && !process.env.OpenAI_API_KEY) {
+      return res.status(500).json({ message: "OpenAI API key not configured" });
+    }
+
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: process.env.OPENAI_MODEL || "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
@@ -63,7 +74,8 @@ export const enhanceJobDescription = async (req, res) => {
     const enhancedContent = response.choices[0].message.content;
     return res.status(200).json({ enhancedContent });
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    console.error("AI Enhancement Error:", error);
+    return res.status(500).json({ message: error.message || "AI service unavailable" });
   }
 };
 

@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, Linkedin, Globe } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Globe, Github, Code } from "lucide-react";
 
 const ClassicTemplate = ({ data, accentColor }) => {
     const formatDate = (dateStr) => {
@@ -11,7 +11,7 @@ const ClassicTemplate = ({ data, accentColor }) => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-8 bg-white text-gray-800 leading-relaxed">
+        <div className="max-w-4xl mx-auto p-8 bg-white text-gray-800 leading-relaxed print:p-6 print:max-w-none">
             {/* Header */}
             <header className="text-center mb-8 pb-6 border-b-2" style={{ borderColor: accentColor }}>
                 <h1 className="text-3xl font-bold mb-2" style={{ color: accentColor }}>
@@ -47,6 +47,18 @@ const ClassicTemplate = ({ data, accentColor }) => {
                         <div className="flex items-center gap-1">
                             <Globe className="size-4" />
                             <span className="break-all">{data.personal_info.website}</span>
+                        </div>
+                    )}
+                    {data.personal_info?.github && (
+                        <div className="flex items-center gap-1">
+                            <Github className="size-4" />
+                            <span className="break-all">{data.personal_info.github}</span>
+                        </div>
+                    )}
+                    {data.personal_info?.leetcode && (
+                        <div className="flex items-center gap-1">
+                            <Code className="size-4" />
+                            <span className="break-all">{data.personal_info.leetcode}</span>
                         </div>
                     )}
                 </div>
@@ -105,6 +117,16 @@ const ClassicTemplate = ({ data, accentColor }) => {
                                 <div>
                                     <li className="font-semibold text-gray-800 ">{proj.name}</li>
                                     <p className="text-gray-600">{proj.description}</p>
+                                    {proj.link && (
+                                        <a 
+                                            href={proj.link} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:text-blue-800 underline text-sm"
+                                        >
+                                            View Project →
+                                        </a>
+                                    )}
                                 </div>
                             </div>
                         ))}

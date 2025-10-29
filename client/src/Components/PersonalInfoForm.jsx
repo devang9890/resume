@@ -1,5 +1,5 @@
 import React from 'react'
-import { BriefcaseBusiness, Globe, Linkedin, Mail, MapPin, Phone, User } from 'lucide-react'
+import { BriefcaseBusiness, Globe, Linkedin, Mail, MapPin, Phone, User, Github, Code } from 'lucide-react'
 
 const PersonalInfoForm = ({ data, onChange, removeBackground, setRemoveBackground }) => {
   const handleChange = (field, value) => {
@@ -13,7 +13,9 @@ const PersonalInfoForm = ({ data, onChange, removeBackground, setRemoveBackgroun
     { key: "location", label: "Location", type: "text", icon: MapPin, required: false },
     { key: "profession", label: "Profession", type: "text", icon: BriefcaseBusiness },
     { key: "linkedIn", label: "LinkedIn Profile", type: "url", icon: Linkedin },
-    { key: "website", label: "Personal Website", type: "url", icon: Globe }
+    { key: "website", label: "Personal Website", type: "url", icon: Globe },
+    { key: "github", label: "GitHub Profile", type: "url", icon: Github },
+    { key: "leetcode", label: "LeetCode Profile", type: "url", icon: Code }
   ]
 
   return (

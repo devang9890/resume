@@ -8,21 +8,30 @@ const ProfessionalSummaryForm = ({ data, onChange, setResumeData }) => {
   const { token } = useSelector((state) => state.auth)
   const [isGenerating, setIsGenerating] = useState(false)
 
-  const generateSummary = async () => { // ✅ added missing parentheses
+  const generateSummary = async () => {
     try {
       setIsGenerating(true)
 
+      // Check if there's any content to enhance
+      if (!data || data.trim().length === 0) {
+        toast.error("Please enter some content to enhance first")
+        return
+      }
+
       const prompt = `Enhance my professional summary: "${data}"`
 
-      // ✅ corrected endpoint name (was "enhane-pro-sum")
       const response = await api.post(
         '/api/ai/enhance-pro-sum',
         { userContent: prompt },
         { headers: { Authorization: token } }
       )
 
-      // ✅ fixed invalid destructuring
       const enhancedContent = response.data?.enhancedContent || response.data
+
+      if (!enhancedContent) {
+        toast.error("No enhanced content received")
+        return
+      }
 
       setResumeData((prev) => ({
         ...prev,
@@ -31,7 +40,9 @@ const ProfessionalSummaryForm = ({ data, onChange, setResumeData }) => {
 
       toast.success('AI has enhanced your summary ✨')
     } catch (error) {
-      toast.error(error?.response?.data?.message || error.message)
+      console.error("AI Enhancement Error:", error)
+      const errorMessage = error?.response?.data?.message || error.message || "Failed to enhance summary"
+      toast.error(errorMessage)
     } finally {
       setIsGenerating(false)
     }

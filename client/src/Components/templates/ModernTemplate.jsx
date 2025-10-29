@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, Linkedin, Globe } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Globe, Github, Code } from "lucide-react";
 
 const ModernTemplate = ({ data, accentColor }) => {
 	const formatDate = (dateStr) => {
@@ -11,7 +11,7 @@ const ModernTemplate = ({ data, accentColor }) => {
 	};
 
 	return (
-		<div className="max-w-4xl mx-auto bg-white text-gray-800">
+		<div className="max-w-4xl mx-auto bg-white text-gray-800 print:max-w-none print:p-6">
 			{/* Header */}
 			<header className="p-8 text-white" style={{ backgroundColor: accentColor }}>
 				<h1 className="text-4xl font-light mb-3">
@@ -47,6 +47,18 @@ const ModernTemplate = ({ data, accentColor }) => {
 						<a target="_blank" href={data.personal_info?.website} className="flex items-center gap-2">
 							<Globe className="size-4" />
 							<span className="break-all text-xs">{data.personal_info.website.split("https://")[1] ? data.personal_info.website.split("https://")[1] : data.personal_info.website}</span>
+						</a>
+					)}
+					{data.personal_info?.github && (
+						<a target="_blank" href={data.personal_info?.github} className="flex items-center gap-2">
+							<Github className="size-4" />
+							<span className="break-all text-xs">{data.personal_info.github.split("https://")[1] ? data.personal_info.github.split("https://")[1] : data.personal_info.github}</span>
+						</a>
+					)}
+					{data.personal_info?.leetcode && (
+						<a target="_blank" href={data.personal_info?.leetcode} className="flex items-center gap-2">
+							<Code className="size-4" />
+							<span className="break-all text-xs">{data.personal_info.leetcode.split("https://")[1] ? data.personal_info.leetcode.split("https://")[1] : data.personal_info.leetcode}</span>
 						</a>
 					)}
 				</div>
@@ -115,6 +127,16 @@ const ModernTemplate = ({ data, accentColor }) => {
 										<div className="text-gray-700 leading-relaxed text-sm mt-3">
 											{p.description}
 										</div>
+									)}
+									{p.link && (
+										<a 
+											href={p.link} 
+											target="_blank" 
+											rel="noopener noreferrer"
+											className="text-blue-600 hover:text-blue-800 underline text-sm mt-2 inline-block"
+										>
+											View Project →
+										</a>
 									)}
 								</div>
 							))}

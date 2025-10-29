@@ -2,6 +2,7 @@ import { Briefcase, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
+import api from "../configs/api";
 
 const ExperienceForm = ({ data, onChange }) => {
 
@@ -33,13 +34,30 @@ const ExperienceForm = ({ data, onChange }) => {
   const generateDescription = async(index)=>{
     setGeneratingIndex(index)
     const experience = data[index]
+    
+    // Check if there's any content to enhance
+    if (!experience.description || experience.description.trim().length === 0) {
+      toast.error("Please enter some job description to enhance first")
+      setGeneratingIndex(-1)
+      return
+    }
+    
     const prompt = `enhance this job description ${experience.description} for the position of ${experience.position} at ${experience.company}`
 
     try {
-      const  {data} = await api.post('api/ai/enhanxe-job-desc' , {userContent: prompt}, {header :{ Authorization : token}})
-      updateExperience(index , "description" , data.enhancedContent)
+      const {data: response} = await api.post('/api/ai/enhance-job-desc' , {userContent: prompt}, {headers: { Authorization : token}})
+      
+      if (!response?.enhancedContent) {
+        toast.error("No enhanced content received")
+        return
+      }
+      
+      updateExperience(index , "description" , response.enhancedContent)
+      toast.success('AI has enhanced your job description ✨')
     } catch (error) {
-      toast.error(error.message)
+      console.error("AI Enhancement Error:", error)
+      const errorMessage = error?.response?.data?.message || error.message || "Failed to enhance job description"
+      toast.error(errorMessage)
     }finally{
       setGeneratingIndex(-1);
     }
@@ -148,16 +166,16 @@ const ExperienceForm = ({ data, onChange }) => {
                     <label className="text-sm font-medium text-gray-700">
                       Job Description
                     </label>
-                    <button onClick={()=> generateDescription(index)} disabled={generateDescription === index || !experience.position || !experience.company}
+                    <button onClick={()=> generateDescription(index)} disabled={generatingIndex === index || !experience.position || !experience.company}
                       type="button"
                       className="flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50"
                     >
                       {generatingIndex === index ? (
                         <Loader2 className="w-3 h-3 animate-spin" />
-                      ) :(
+                      ) : (
                         <Sparkles className="w-3 h-3" />
                       )}
-                      <Sparkles className="w-3 h-3" /> Enhance with AI
+                      Enhance with AI
                     </button>
                   </div>
                   <textarea

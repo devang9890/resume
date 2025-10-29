@@ -16,7 +16,7 @@ const Preview = () => {
       const { data } = await api.get(`/api/resumes/public/${resumeId}`)
       setResumeData(data.resume)
     } catch (error) {
-      console.error('Error fetching resume:', error.message)
+      // Error handled silently for better UX
     } finally {
       setIsLoading(false)
     }

@@ -10,7 +10,7 @@ const MinimalTemplate = ({ data, accentColor }) => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-8 bg-white text-gray-900 font-light">
+        <div className="max-w-4xl mx-auto p-8 bg-white text-gray-900 font-light print:p-6 print:max-w-none">
             {/* Header */}
             <header className="mb-10">
                 <h1 className="text-4xl font-thin mb-4 tracking-wide">
@@ -26,6 +26,12 @@ const MinimalTemplate = ({ data, accentColor }) => {
                     )}
                     {data.personal_info?.website && (
                         <span className="break-all">{data.personal_info.website}</span>
+                    )}
+                    {data.personal_info?.github && (
+                        <span className="break-all">{data.personal_info.github}</span>
+                    )}
+                    {data.personal_info?.leetcode && (
+                        <span className="break-all">{data.personal_info.leetcode}</span>
                     )}
                 </div>
             </header>
@@ -79,6 +85,16 @@ const MinimalTemplate = ({ data, accentColor }) => {
                             <div key={index} className="flex flex-col gap-2 justify-between items-baseline">
                                 <h3 className="text-lg font-medium ">{proj.name}</h3>
                                 <p className="text-gray-600">{proj.description}</p>
+                                {proj.link && (
+                                    <a 
+                                        href={proj.link} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:text-blue-800 underline text-sm"
+                                    >
+                                        View Project →
+                                    </a>
+                                )}
                             </div>
                         ))}
                     </div>

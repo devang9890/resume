@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Globe, Github, Code } from "lucide-react";
 
 const MinimalImageTemplate = ({ data, accentColor }) => {
     const formatDate = (dateStr) => {
@@ -11,7 +11,7 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
     };
 
     return (
-        <div className="max-w-5xl mx-auto bg-white text-zinc-800">
+        <div className="max-w-5xl mx-auto bg-white text-zinc-800 print:max-w-none print:p-6">
             <div className="grid grid-cols-3">
 
                 <div className="col-span-1  py-10">
@@ -65,6 +65,30 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                                 <div className="flex items-center gap-2">
                                     <MapPin size={14} style={{ color: accentColor }} />
                                     <span>{data.personal_info.location}</span>
+                                </div>
+                            )}
+                            {data.personal_info?.linkedin && (
+                                <div className="flex items-center gap-2">
+                                    <Linkedin size={14} style={{ color: accentColor }} />
+                                    <span className="break-all text-xs">{data.personal_info.linkedin}</span>
+                                </div>
+                            )}
+                            {data.personal_info?.website && (
+                                <div className="flex items-center gap-2">
+                                    <Globe size={14} style={{ color: accentColor }} />
+                                    <span className="break-all text-xs">{data.personal_info.website}</span>
+                                </div>
+                            )}
+                            {data.personal_info?.github && (
+                                <div className="flex items-center gap-2">
+                                    <Github size={14} style={{ color: accentColor }} />
+                                    <span className="break-all text-xs">{data.personal_info.github}</span>
+                                </div>
+                            )}
+                            {data.personal_info?.leetcode && (
+                                <div className="flex items-center gap-2">
+                                    <Code size={14} style={{ color: accentColor }} />
+                                    <span className="break-all text-xs">{data.personal_info.leetcode}</span>
                                 </div>
                             )}
                         </div>
@@ -173,6 +197,16 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                                                     <li key={i}>{line}</li>
                                                 ))}
                                             </ul>
+                                        )}
+                                        {project.link && (
+                                            <a 
+                                                href={project.link} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="text-blue-600 hover:text-blue-800 underline text-sm mt-2 inline-block"
+                                            >
+                                                View Project →
+                                            </a>
                                         )}
                                     </div>
                                 ))}

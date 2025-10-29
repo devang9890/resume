@@ -30,7 +30,7 @@ const ResumePreview = ({ data, template, accentColor, classes = "" }) => {
       <style>{`
         @page {
           size: letter;
-          margin: 0;
+          margin: 0.5in;
         }
         @media print {
           html,
@@ -38,6 +38,8 @@ const ResumePreview = ({ data, template, accentColor, classes = "" }) => {
             width: 8.5in;
             height: 11in;
             overflow: hidden;
+            margin: 0;
+            padding: 0;
           }
           body * {
             visibility: hidden;
@@ -56,6 +58,29 @@ const ResumePreview = ({ data, template, accentColor, classes = "" }) => {
             padding: 0;
             box-shadow: none !important;
             border: none !important;
+            background: white !important;
+            color: black !important;
+          }
+          #resume-preview a {
+            color: #2563eb !important;
+            text-decoration: underline !important;
+          }
+          #resume-preview a:visited {
+            color: #2563eb !important;
+          }
+          #resume-preview h1, #resume-preview h2, #resume-preview h3 {
+            color: black !important;
+            page-break-after: avoid;
+          }
+          #resume-preview section {
+            page-break-inside: avoid;
+            margin-bottom: 1rem;
+          }
+          #resume-preview .space-y-4 > * + * {
+            margin-top: 1rem;
+          }
+          #resume-preview .space-y-6 > * + * {
+            margin-top: 1.5rem;
           }
         }
       `}</style>

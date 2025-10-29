@@ -73,7 +73,6 @@ const ResumeBuilder = () => {
         document.title = data.resume.title;
       }
     } catch (error) {
-      console.error("Error loading resume:", error.message);
       toast.error("Failed to load resume");
     }
   };
@@ -96,7 +95,6 @@ const ResumeBuilder = () => {
       setResumeData((prev) => ({ ...prev, public: !prev.public }));
       toast.success(data.message || "Visibility updated!");
     } catch (error) {
-      console.error("Error updating resume:", error);
       toast.error("Failed to change visibility");
     }
   };
@@ -142,7 +140,7 @@ const ResumeBuilder = () => {
     setResumeData(data.resume);
     toast.success(data.message);
   } catch (error) {
-    console.error("Error saving resume:", error);
+    toast.error("Failed to save resume");
   }
 };
 
