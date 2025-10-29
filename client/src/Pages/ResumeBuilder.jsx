@@ -27,7 +27,7 @@ import ProjectForm from "../Components/ProjectForm";
 import SkillsForm from "../Components/SkillsForm";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import api from "../api/api"; // ✅ Make sure this file exists (Axios instance or fetch helper)
+import api from "../configs/api";
 
 const ResumeBuilder = () => {
   const { resumeId } = useParams();
@@ -61,11 +61,11 @@ const ResumeBuilder = () => {
 
   const activeSection = sections[activeSectionIndex]; // ✅ moved outside
 
-  // ✅ Fixed function: proper headers and variable names
+  // Load existing resume data
   const loadExistingResume = async () => {
     try {
       const { data } = await api.get(`/api/resumes/get/${resumeId}`, {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (data.resume) {
@@ -74,6 +74,7 @@ const ResumeBuilder = () => {
       }
     } catch (error) {
       console.error("Error loading resume:", error.message);
+      toast.error("Failed to load resume");
     }
   };
 
@@ -81,15 +82,15 @@ const ResumeBuilder = () => {
     loadExistingResume();
   }, [resumeId]);
 
-  // ✅ Fixed: correct FormData usage and header spelling
+  // Change resume visibility
   const changeResumeVisibility = async () => {
     try {
       const formData = new FormData();
       formData.append("resumeId", resumeId);
-      formData.append("data", JSON.stringify({ public: !resumeData.public }));
+      formData.append("resumeData", JSON.stringify({ ...resumeData, public: !resumeData.public }));
 
       const { data } = await api.put("/api/resumes/update", formData, {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       setResumeData((prev) => ({ ...prev, public: !prev.public }));
@@ -114,6 +115,24 @@ const ResumeBuilder = () => {
 
   const downloadResume = () => {
     window.print();
+  };
+
+  // Save resume data
+  const saveResume = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("resumeId", resumeId);
+      formData.append("resumeData", JSON.stringify(resumeData));
+
+      const { data } = await api.put("/api/resumes/update", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      toast.success(data.message || "Resume saved successfully!");
+    } catch (error) {
+      console.error("Error saving resume:", error);
+      toast.error("Failed to save resume");
+    }
   };
 
   return (
@@ -265,7 +284,10 @@ const ResumeBuilder = () => {
                 )}
               </div>
 
-              <button className="bg-gradient-to-br from-green-100 to-green-200 ring-green-300 text-green-600 hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm">
+              <button 
+                onClick={saveResume}
+                className="bg-gradient-to-br from-green-100 to-green-200 ring-green-300 text-green-600 hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm"
+              >
                 Save Changes
               </button>
             </div>
