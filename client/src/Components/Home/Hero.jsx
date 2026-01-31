@@ -8,12 +8,13 @@ const Hero = () => {
 
     const [menuOpen, setMenuOpen] = React.useState(false);
 
-    const logos = [
-        'https://saasly.prebuiltui.com/assets/companies-logo/instagram.svg',
-        'https://saasly.prebuiltui.com/assets/companies-logo/framer.svg',
-        'https://saasly.prebuiltui.com/assets/companies-logo/microsoft.svg',
-        'https://saasly.prebuiltui.com/assets/companies-logo/huawei.svg',
-        'https://saasly.prebuiltui.com/assets/companies-logo/walmart.svg',
+    // Company names for trusted by section (logos removed to prevent 404 errors)
+    const companies = [
+        'Instagram',
+        'Framer',
+        'Microsoft',
+        'Huawei',
+        'Walmart',
     ]
     return (
         <>
@@ -106,10 +107,14 @@ const Hero = () => {
                         </button>
                     </div>
 
-                    <p className="py-6 text-slate-600 mt-14">Trusting by leading brands, including</p>
+                    <p className="py-6 text-slate-600 mt-14">Trusted by leading brands, including</p>
 
-                    <div className="flex flex-wrap justify-between max-sm:justify-center gap-6 max-w-3xl w-full mx-auto py-4" id="logo-container">
-                        {logos.map((logo, index) => <img key={index} src={logo} alt="logo" className="h-6 w-auto max-w-xs" />)}
+                    <div className="flex flex-wrap justify-center gap-6 max-w-3xl w-full mx-auto py-4" id="logo-container">
+                        {companies.map((company, index) => (
+                            <div key={index} className="px-6 py-2 bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-lg text-slate-700 font-medium text-sm hover:shadow-md transition-shadow">
+                                {company}
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

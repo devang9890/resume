@@ -8,6 +8,11 @@ import {
 
 const router = express.Router();
 
+// ✅ Test endpoint
+router.get("/test", protect, (req, res) => {
+  res.json({ message: "AI routes working", userId: req.userId });
+});
+
 // ✅ Enhance professional summary
 router.post("/enhance-pro-sum", protect, enhanceProfessionalSummary);
 

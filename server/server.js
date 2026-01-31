@@ -17,13 +17,23 @@ async function startServer() {
 
     // ✅ Middlewares
     app.use(express.json());
-    app.use(cors());
+    app.use(cors({
+      origin: process.env.CLIENT_URL || 'http://localhost:5173',
+      credentials: true
+    }));
 
     // ✅ Routes
     app.get("/", (req, res) => res.send("Server is live 🚀"));
     app.use("/api/users", userRouter);
     app.use("/api/resumes", resumeRouter);
     app.use("/api/ai", aiRouter);
+
+    console.log('✅ Routes registered:');
+    console.log('   - GET  /');
+    console.log('   - POST /api/users/register');
+    console.log('   - POST /api/users/login');
+    console.log('   - POST /api/resumes/create');
+    console.log('   - POST /api/ai/upload-resume');
 
     // ✅ Start Server
     app.listen(PORT, () => {

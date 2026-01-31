@@ -65,7 +65,7 @@ const ResumeBuilder = () => {
   const loadExistingResume = async () => {
     try {
       const { data } = await api.get(`/api/resumes/get/${resumeId}`, {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (data.resume) {
@@ -73,7 +73,8 @@ const ResumeBuilder = () => {
         document.title = data.resume.title;
       }
     } catch (error) {
-      toast.error("Failed to load resume");
+      console.error('Load resume error:', error);
+      toast.error(error?.response?.data?.message || "Failed to load resume");
     }
   };
 
@@ -95,7 +96,8 @@ const ResumeBuilder = () => {
       setResumeData((prev) => ({ ...prev, public: !prev.public }));
       toast.success(data.message || "Visibility updated!");
     } catch (error) {
-      toast.error("Failed to change visibility");
+      console.error('Change visibility error:', error);
+      toast.error(error?.response?.data?.message || "Failed to change visibility");
     }
   };
 
@@ -133,14 +135,15 @@ const ResumeBuilder = () => {
 
     const { data } = await api.put('/api/resumes/update', formData, {
       headers: {
-        Authorization: token 
+        Authorization: `Bearer ${token}` 
       }
     });
 
     setResumeData(data.resume);
     toast.success(data.message);
   } catch (error) {
-    toast.error("Failed to save resume");
+    console.error('Save resume error:', error);
+    toast.error(error?.response?.data?.message || "Failed to save resume");
   }
 };
 

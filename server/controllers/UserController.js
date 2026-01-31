@@ -17,13 +17,13 @@ export const registerUser = async(req , res ) =>{
 
         //check if required fields are present
         if(!name || !email || !password){
-            return res.status(400).json({Message: 'missing required fields'})
+            return res.status(400).json({Message: 'Missing required fields: name, email, or password'})
         }
 
         //check if user already exists
         const user = await User.findOne({email})
         if(user){
-            return res.status(400).json({Message : 'user already exists'})
+            return res.status(400).json({Message : 'User with this email already exists'})
         }
 
         // create new user 
@@ -41,6 +41,7 @@ export const registerUser = async(req , res ) =>{
         return res.status(201).json({Message: 'User created successfully' , token , user:newUser})
 
     } catch(error){
+        console.error("Registration error:", error);
         return res.status(400).json({Message: error.message})
 
     }
@@ -61,16 +62,18 @@ export const loginUser = async(req , res ) =>{
         }
 
         // check if password is correct
-        if(!user.comparePassword(password)){
+        const isPasswordValid = user.comparePassword(password);
+        if(!isPasswordValid){
             return res.status(400).json({Message : 'Invalid email or password'})
         }
 
         // return success message
         const token = generateToken(user._id)
         user.password = undefined;
-        return res.status(201).json({Message: 'Login successful' , token , user})
+        return res.status(200).json({Message: 'Login successful' , token , user})
 
     } catch(error){
+        console.error("Login error:", error);
         return res.status(400).json({Message: error.message})
 
     }
@@ -87,7 +90,7 @@ export const getUserById = async(req , res ) =>{
         //check if user exits
         const user = await User.findById(userId)
         if(!user){
-            return res.status(404).json({Message : 'user not found'})
+            return res.status(404).json({Message : 'User not found'})
         }
         // return user
         user.password = undefined;
@@ -95,6 +98,7 @@ export const getUserById = async(req , res ) =>{
         
 
     } catch(error){
+        console.error("Get user error:", error);
         return res.status(400).json({Message: error.message})
 
     }
@@ -111,6 +115,7 @@ export const getUserResumes = async(req, res) => {
         const resumes = await Resume.find({userId})
         return res.status(200).json({resumes})
     } catch(error){
+        console.error("Get user resumes error:", error);
         return res.status(400).json({Message: error.message})
     }
 }

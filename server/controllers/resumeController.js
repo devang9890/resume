@@ -9,12 +9,17 @@ export const createResume = async (req, res) => {
         const userId = req.userId;
         const { title } = req.body;
 
+        if(!title){
+            return res.status(400).json({ message: 'Title is required' })
+        }
+
         //create new resume
         const newResume = await Resume.create({ userId, title })
         // return success message
         return res.status(201).json({ message: 'Resume created successfully', resume: newResume })
 
     } catch (error) {
+        console.error("Create resume error:", error);
         return res.status(400).json({ message: error.message })
     }
 }
@@ -28,9 +33,10 @@ export const deleteResume = async (req, res) => {
 
         await Resume.findOneAndDelete({ userId, _id: resumeId })
         // return success message 
-        return res.status(201).json({ message: 'Resume created successfully' })
+        return res.status(200).json({ message: 'Resume deleted successfully' })
 
     } catch (error) {
+        console.error("Delete resume error:", error);
         return res.status(400).json({ message: error.message })
     }
 }
@@ -51,9 +57,10 @@ export const getResumeById = async (req, res) => {
         resume.__v = undefined;
         resume.createdAt = undefined;
         resume.updatedAt = undefined;
-        return res.status(201).json({ resume })
+        return res.status(200).json({ resume })
 
     } catch (error) {
+        console.error("Get resume error:", error);
         return res.status(400).json({ message: error.message })
     }
 }
@@ -66,11 +73,12 @@ export const getPublicResumeyId = async (req, res) => {
         const resume = await Resume.findOne({ public: true, _id: resumeId })
 
         if (!resume) {
-            return res.status(404).json({ message: "Resume not found" })
+            return res.status(404).json({ message: "Resume not found or not public" })
         }
         return res.status(200).json({ resume })
     }
     catch (error) {
+        console.error("Get public resume error:", error);
         return res.status(400).json({ message: error.message })
 
     }
@@ -87,9 +95,9 @@ export const updatedResume = async (req, res) => {
 
         let resumeDataCopy;
         if(typeof resumeData === 'string'){
-            resumeDataCopy = await JSON.parse(resumeData)
+            resumeDataCopy = JSON.parse(resumeData)
         } else{
-            resumeData = structuredClone(resumeData)
+            resumeDataCopy = structuredClone(resumeData)
         }
         
         if (image) {
@@ -112,6 +120,20 @@ export const updatedResume = async (req, res) => {
 
         return res.status(200).json({ message: "Saved Successfully", resume })
     } catch (error) {
+        console.error("Resume update error:", error);
         return res.status(400).json({ message: error.message })
+    }
+}
+
+// controller for getting all user resumes
+// get : /api/resumes/get-all
+export const getAllResumes = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const allResumes = await Resume.find({ userId }).sort({ updatedAt: -1 });
+        return res.status(200).json({ allResumes });
+    } catch (error) {
+        console.error("Get all resumes error:", error);
+        return res.status(400).json({ message: error.message });
     }
 }

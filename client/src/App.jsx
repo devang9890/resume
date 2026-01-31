@@ -19,7 +19,7 @@ const App = () => {
     const token = localStorage.getItem('token')
     try{
       if(token){
-        const { data } = await api.get('/api/users/data' , {headers: {Authorization:token}})
+        const { data } = await api.get('/api/users/data' , {headers: {Authorization: `Bearer ${token}`}})
         if(data.user){
           dispatch(login({token , user : data.user}))
         }
@@ -28,8 +28,12 @@ const App = () => {
         dispatch(setLoading(false))
       }
     } catch(error) {
+      console.error('Get user data error:', error);
       dispatch(setLoading(false))
-      // Error handled silently for better UX
+      // Clear invalid token
+      if(error?.response?.status === 401){
+        localStorage.removeItem('token');
+      }
     }
   }
 

@@ -45,7 +45,7 @@ const ExperienceForm = ({ data, onChange }) => {
     const prompt = `enhance this job description ${experience.description} for the position of ${experience.position} at ${experience.company}`
 
     try {
-      const {data: response} = await api.post('/api/ai/enhance-job-desc' , {userContent: prompt}, {headers: { Authorization : token}})
+      const {data: response} = await api.post('/api/ai/enhance-job-desc' , {userContent: prompt}, {headers: { Authorization : `Bearer ${token}`}})
       
       if (!response?.enhancedContent) {
         toast.error("No enhanced content received")

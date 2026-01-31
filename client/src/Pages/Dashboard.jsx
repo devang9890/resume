@@ -33,11 +33,12 @@ const Dashboard = () => {
   const loadAllResumes = async () => {
     try {
       const { data } = await api.get("/api/resumes/get-all", {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setAllResumes(data.allResumes || []);
     } catch (error) {
-      toast.error(error?.response?.data?.message || error.message);
+      console.error('Load resumes error:', error);
+      toast.error(error?.response?.data?.message || 'Failed to load resumes');
     }
   };
 
@@ -48,14 +49,16 @@ const Dashboard = () => {
       const { data } = await api.post(
         "/api/resumes/create",
         { title },
-        { headers: { Authorization: token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setAllResumes([...allResumes, data.resume]);
       setTitle("");
       setShowCreateResume(false);
       navigate(`/app/builder/${data.resume._id}`);
+      toast.success('Resume created successfully');
     } catch (error) {
-      toast.error(error?.response?.data?.message || error.message);
+      console.error('Create resume error:', error);
+      toast.error(error?.response?.data?.message || 'Failed to create resume');
     }
   };
 
@@ -64,11 +67,39 @@ const Dashboard = () => {
     event.preventDefault();
     setIsLoading(true);
     try {
-      const resumeText = await pdfToText(resume);
+      // Validate file type
+      if (!resume.name.toLowerCase().endsWith('.pdf')) {
+        toast.error('Please upload a PDF file');
+        setIsLoading(false);
+        return;
+      }
+
+      // Extract text from PDF
+      let resumeText;
+      try {
+        resumeText = await pdfToText(resume);
+      } catch (pdfError) {
+        console.error('PDF extraction error:', pdfError);
+        toast.error('Failed to read PDF file. Please ensure it\'s a valid PDF.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Validate extracted text
+      if (!resumeText || resumeText.trim().length < 50) {
+        toast.error('Could not extract enough text from PDF. Please try a different file.');
+        setIsLoading(false);
+        return;
+      }
+
+      console.log('Extracted resume text length:', resumeText.length);
+      console.log('First 100 chars:', resumeText.substring(0, 100));
+      console.log('Sending upload request with title:', title);
+
       const { data } = await api.post(
         "/api/ai/upload-resume",
         { title, resumeText },
-        { headers: { Authorization: token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setTitle("");
       setResume(null);
@@ -76,9 +107,14 @@ const Dashboard = () => {
       navigate(`/app/builder/${data.resumeId}`);
       toast.success("Resume uploaded successfully");
     } catch (error) {
-      toast.error(error?.response?.data?.message || error.message);
+      console.error('Upload resume error:', error);
+      console.error('Error response:', error?.response?.data);
+      console.error('Error status:', error?.response?.status);
+      const errorMsg = error?.response?.data?.message || error.message || 'Failed to upload resume';
+      toast.error(errorMsg);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   // ✅ Edit title
@@ -92,7 +128,7 @@ const Dashboard = () => {
           resumeData: { title },
         },
         {
-          headers: { Authorization: token },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       setAllResumes((allResumes) =>
@@ -104,7 +140,8 @@ const Dashboard = () => {
       setEditResumeId(null);
       toast.success(data.message || "Title updated successfully");
     } catch (error) {
-      toast.error(error?.response?.data?.message || error.message);
+      console.error('Edit title error:', error);
+      toast.error(error?.response?.data?.message || 'Failed to update title');
     }
   };
 
@@ -114,13 +151,14 @@ const Dashboard = () => {
       const confirmDelete = window.confirm("Are you sure you want to delete this resume?");
       if (confirmDelete) {
         const { data } = await api.delete(`/api/resumes/delete/${resumeId}`, {
-          headers: { Authorization: token },
+          headers: { Authorization: `Bearer ${token}` },
         });
         setAllResumes(allResumes.filter((r) => r._id !== resumeId));
         toast.success(data.message || "Deleted successfully");
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message || error.message);
+      console.error('Delete resume error:', error);
+      toast.error(error?.response?.data?.message || 'Failed to delete resume');
     }
   };
 
@@ -281,22 +319,27 @@ const Dashboard = () => {
               />
 
               <label htmlFor="resume-input" className="block text-sm text-slate-700">
-                Select Resume File
+                Select Resume File (PDF only)
                 <div className="flex flex-col items-center justify-center gap-2 border group text-slate-400 border-slate-400 border-dashed rounded-md p-4 py-10 my-4 hover:border-green-500 hover:text-green-700 cursor-pointer transition-colors">
                   {resume ? (
-                    <p className="text-sm text-green-700">{resume.name}</p>
+                    <div className="text-center">
+                      <p className="text-sm text-green-700 font-medium">{resume.name}</p>
+                      <p className="text-xs text-slate-500 mt-1">{(resume.size / 1024).toFixed(1)} KB</p>
+                    </div>
                   ) : (
                     <>
                       <UploadCloud className="size-14 stroke-1" />
-                      <p>Upload Resume</p>
+                      <p>Upload PDF Resume</p>
+                      <p className="text-xs text-slate-500">Only PDF files are supported</p>
                     </>
                   )}
                   <input
                     id="resume-input"
                     type="file"
-                    accept=".pdf,.doc,.docx"
+                    accept=".pdf"
                     onChange={handleFileSelect}
                     className="hidden"
+                    required
                   />
                 </div>
               </label>
